@@ -1,8 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
-const home = require('./modules/home')
+const productController = require('../controllers/productController')
+const cartController = require('../controllers/cartController')
 
-router.use('/', home)
+// home route
+router.get('/', (req, res) => {
+  res.render('index')
+})
+
+router.get('/products', productController.getProducts)
+router.get('/cart', cartController.getCart)
 
 module.exports = router

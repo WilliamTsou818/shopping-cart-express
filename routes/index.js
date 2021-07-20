@@ -3,6 +3,7 @@ const router = express.Router()
 
 const productController = require('../controllers/productController')
 const cartController = require('../controllers/cartController')
+const orderController = require('../controllers/orderController')
 
 // home route
 router.get('/', (req, res) => {
@@ -18,5 +19,8 @@ router.post('/cart', cartController.postCart)
 router.post('/cartItem/:id/add', cartController.addCartItem)
 router.post('/cartItem/:id/sub', cartController.subCartItem)
 router.delete('/cartItem/:id', cartController.deleteCartItem)
+
+// order route
+router.get('/orders', orderController.getOrders)
 
 module.exports = router

@@ -9,7 +9,7 @@ const cartController = {
       include: { model: Product, as: 'items' }
     })
       .then(cart => {
-        cart ? cart = cart.toJSON() : cart = {items: []}
+        cart ? cart = cart.toJSON() : cart = { items: [] }
         const totalPrice = cart.items.length > 0 ? cart.items.map(d => d.price * d.CartItem.quantity).reduce((a, b) => a + b) : 0
         return res.render('cart', {
           cart,
@@ -20,7 +20,7 @@ const cartController = {
   postCart: (req, res) => {
     return Cart.findOrCreate({
       where: {
-        id: req.session.cartId || 0,
+        id: req.session.cartId || 0
       }
     })
       .then(cart => {

@@ -68,6 +68,14 @@ const cartController = {
           return res.redirect('back')
         })
     })
+  },
+  deleteCartItem: (req, res) => {
+    CartItem.findByPk(req.params.id).then(cartItem => {
+      cartItem.destroy()
+        .then((cartItem) => {
+          return res.redirect('back')
+        })
+    })
   }
 }
 

@@ -15,5 +15,7 @@ router.get('/products', productController.getProducts)
 // cart route
 router.get('/cart', cartController.getCart)
 router.post('/cart', cartController.postCart)
+router.post('/cartItem/:id/add', cartController.addCartItem)
+router.post('/cartItem/:id/sub', cartController.subCartItem)
 
 module.exports = router

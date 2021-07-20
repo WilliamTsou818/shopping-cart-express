@@ -9,7 +9,11 @@ router.get('/', (req, res) => {
   res.render('index')
 })
 
+// product route
 router.get('/products', productController.getProducts)
+
+// cart route
 router.get('/cart', cartController.getCart)
+router.post('/cart', cartController.postCart)
 
 module.exports = router

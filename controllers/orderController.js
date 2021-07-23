@@ -1,16 +1,35 @@
+require('dotenv').config()
 const db = require('../models')
 const nodemailer = require('nodemailer')
 const Order = db.Order
 const OrderItem = db.OrderItem
 const Cart = db.Cart
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: '',
-    pass: ''
+async function generateTransporter (order) {
+  console.log(process.env.MAIL_PASSWORD)
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASSWORD
+    }
+  })
+
+  const mailOptions = {
+    from: process.env.MAIL,
+    to: process.env.MAIL,
+    subject: `${order.id} 訂單成立`,
+    text: `${order.id} 訂單成立`
   }
-})
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error)
+    } else {
+      console.log('Email sent: ' + info.response)
+    }
+  })
+}
 
 const orderController = {
   getOrders: (req, res) => {
@@ -52,21 +71,8 @@ const orderController = {
               })
             )
           }
-
-          const mailOptions = {
-            from: '',
-            to: '',
-            subject: `${order.id} 訂單成立`,
-            text: `${order.id} 訂單成立`
-          }
-
-          transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-              console.log(error)
-            } else {
-              console.log('Email sent: ' + info.response)
-            }
-          })
+          // send mail
+          generateTransporter(order)
 
           return Promise.all(results).then(() =>
             res.redirect('/orders')
@@ -95,7 +101,7 @@ const orderController = {
     })
   },
   newebpayCallback: (req, res) => {
-    console.log('===== spgatewayCallback =====')
+    console.log('===== newebpayCallback =====')
     console.log(req.body)
     console.log('==========')
 

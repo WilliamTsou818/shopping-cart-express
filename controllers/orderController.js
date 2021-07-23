@@ -41,6 +41,15 @@ async function generateTransporter (order) {
   })
 }
 
+function create_mpg_aes_decrypt (TradeInfo) {
+  const decrypt = crypto.createDecipheriv('aes256', tradeData.HashKey, tradeData.HashIV)
+  decrypt.setAutoPadding(false)
+  const text = decrypt.update(TradeInfo, 'hex', 'utf8')
+  const plainText = text + decrypt.final('utf8')
+  const result = plainText.replace(/[\x00-\x20]+/g, '')
+  return result
+}
+
 function genDataChain (TradeInfo) {
   const results = []
   for (const kv of Object.entries(TradeInfo)) {
@@ -175,7 +184,13 @@ const orderController = {
 
     return Order.findByPk(req.params.id, {}).then(order => {
       const tradeInfo = getTradeInfo(order.amount, '產品', 'cccc1589@gmail.com')
-      return res.render('payment', { order: order.toJSON(), tradeInfo })
+      order.update({
+        ...req.body,
+        sn: tradeInfo.MerchantOrderNo
+      })
+        .then(order => {
+          return res.render('payment', { order: order.toJSON(), tradeInfo })
+        })
     })
   },
   newebpayCallback: (req, res) => {

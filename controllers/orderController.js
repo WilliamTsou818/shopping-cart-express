@@ -41,20 +41,19 @@ const orderController = {
         amount: req.body.amount
       })
         .then(order => {
-
-          const results = [];
+          const results = []
           for (let i = 0; i < cart.items.length; i++) {
             results.push(
               OrderItem.create({
                 OrderId: order.id,
                 ProductId: cart.items[i].id,
                 price: cart.items[i].price,
-                quantity: cart.items[i].CartItem.quantity,
+                quantity: cart.items[i].CartItem.quantity
               })
             )
           }
 
-          var mailOptions = {
+          const mailOptions = {
             from: '',
             to: '',
             subject: `${order.id} 訂單成立`,
@@ -65,15 +64,14 @@ const orderController = {
             if (error) {
               console.log(error)
             } else {
-              console.log('Email sent: ' + info.response);
+              console.log('Email sent: ' + info.response)
             }
           })
 
           return Promise.all(results).then(() =>
             res.redirect('/orders')
           )
-
-      })
+        })
     })
   },
   cancelOrder: (req, res) => {
@@ -81,11 +79,27 @@ const orderController = {
       order.update({
         ...req.body,
         shipping_status: '-1',
-        payment_status: '-1',
+        payment_status: '-1'
       }).then(() => {
         return res.redirect('back')
       })
     })
+  },
+  getPayment: (req, res) => {
+    console.log('===== getPayment =====')
+    console.log(req.params.id)
+    console.log('==========')
+
+    return Order.findByPk(req.params.id, {}).then(order => {
+      return res.render('payment', { order: order.toJSON() })
+    })
+  },
+  newebpayCallback: (req, res) => {
+    console.log('===== spgatewayCallback =====')
+    console.log(req.body)
+    console.log('==========')
+
+    return res.redirect('back')
   }
 }
 

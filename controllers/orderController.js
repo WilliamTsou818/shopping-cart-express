@@ -122,7 +122,7 @@ const orderController = {
     Order.findAll({
       nest: true,
       include: 'items',
-      where: { shipping_status: 0, payment_status: 0 }
+      where: { shipping_status: 0 }
     }).then(orders => {
       orders = orders.map(order => ({
         ...order.dataValues,
@@ -198,7 +198,19 @@ const orderController = {
     console.log(req.body)
     console.log('==========')
 
-    return res.redirect('/orders')
+    const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
+
+    console.log('===== spgatewayCallback: create_mpg_aes_decrypt、data =====')
+    console.log(data)
+
+    return Order.findAll({ where: { sn: data.Result.MerchantOrderNo } }).then(orders => {
+      orders[0].update({
+        ...req.body,
+        payment_status: 1
+      }).then(() => {
+        return res.redirect('/orders')
+      })
+    })
   }
 }
 
